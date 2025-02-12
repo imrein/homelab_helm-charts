@@ -20,7 +20,7 @@ The structure includes:
 - **Library**: A Helm library with reusable templates for consistent chart development.
 
 > [!NOTE]
-> I created all of the profiles from the ground up to learn more about puppet. These profiles are not perfect and might still have flaws and bad-practices.
+> I created the library charts from the ground up to learn more about kube and helm. These are not perfect and might still have flaws and bad-practices.
 
 ### Apps
 
