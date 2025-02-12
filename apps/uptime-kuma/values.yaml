@@ -1,0 +1,43 @@
+appname: uptime-kuma
+replicas: 1
+image: 
+  repository: louislam/uptime-kuma
+  version: 1.23.16
+
+service:
+  name: uptime-kuma-service
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3001
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - kuma.local.imrein.com
+      kind: Rule
+      services:
+        - name: uptime-kuma-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: local-imrein-com-live-tls
+
+resources:
+  limits:
+    memory: 150Mi
+  requests:
+    memory: 150Mi
+
+pvc:
+  enabled: true
+  size: 200Mi
+
+volumes:
+  - name: uptime-kuma
+    type: block
+    mountPath: /app/data
+    subPath: data

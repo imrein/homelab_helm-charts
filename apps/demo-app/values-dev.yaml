@@ -1,0 +1,31 @@
+appname: demo-app
+replicas: 2
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - demo.dev.imrein.com
+      kind: Rule
+      services:
+        - name: demo-app-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: dev-imrein-com-live-tls
+
+pvc:
+  enabled: true
+  size: 2Gi
+
+volumes:
+  - name: test1
+    type: block
+    mountPath: /tmp/testing
+    subPath: testing
+
+  - name: test2
+    type: block
+    mountPath: /tmp/testing2
+    subPath: testing2

@@ -1,0 +1,16 @@
+appname: ntfy
+replicas: 1
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - ntfy.dev.imrein.com
+      kind: Rule
+      services:
+        - name: ntfy-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: dev-imrein-com-live-tls

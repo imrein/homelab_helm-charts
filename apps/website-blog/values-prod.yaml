@@ -1,0 +1,18 @@
+appname: website-blog
+replicas: 3
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - imrein.com
+        - www.imrein.com
+      kind: Rule
+      services:
+        - name: website-blog-service
+          port: 80
+      middlewares:
+        - name: default-headers
+        - name: headers-forwarding
+  tls:
+    secret: prod-imrein-com-live-tls

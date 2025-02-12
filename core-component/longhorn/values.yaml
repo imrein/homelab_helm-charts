@@ -1,0 +1,26 @@
+longhorn:
+  preUpgradeChecker:
+    jobEnabled: false
+
+  longhornManager:
+    nodeSelector:
+      longhorn: "true"
+
+  longhornDriver:
+    nodeSelector:
+      longhorn: "true"
+
+  longhornUI:
+    nodeSelector:
+      longhorn: "true"
+
+  service:
+    ui:
+      type: LoadBalancer
+      nodePort: 32682
+
+  persistence:
+    defaultNodeSelector:
+      enable: true
+      selector: "storage"
+    defaultClassReplicaCount: 1

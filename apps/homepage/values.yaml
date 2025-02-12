@@ -1,0 +1,487 @@
+appname: homepage
+replicas: 1
+image: 
+  repository: ghcr.io/gethomepage/homepage
+  version: v0.10.9
+
+service:
+  name: homepage-service
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - homepage.local.imrein.com
+      kind: Rule
+      services:
+        - name: homepage-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: local-imrein-com-live-tls
+
+envFrom:
+  - secretName: homepage
+
+secrets:
+  - name: homepage
+    path: homepage
+
+resources:
+  limits:
+    memory: 200Mi
+  requests:
+    memory: 200Mi
+
+serviceAccounts:
+  - name: homepage
+    secret: homepage
+
+clusterRoles:
+  - name: default
+    namespace: prod
+    rules:
+      - apiGroups:
+          - ""
+        resources:
+          - namespaces
+          - pods
+          - nodes
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - extensions
+          - networking.k8s.io
+        resources:
+          - ingresses
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - traefik.io
+        resources:
+          - ingressroutes
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - metrics.k8s.io
+        resources:
+          - nodes
+          - pods
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - apiextensions.k8s.io
+        resources:
+          - customresourcedefinitions
+          - customresourcedefinitions/status
+        verbs:
+          - get
+          - list
+          - watch
+
+pvc:
+  enabled: false
+
+volumes:
+  - name: homepage-kube
+    type: configMap
+    configMap: homepage-kube
+    mountPath: /app/config/kubernetes.yaml
+    subPath: kubernetes.yaml
+    data:
+      kubernetes.yaml: |
+        mode: cluster
+
+  - name: homepage-settings
+    type: configMap
+    configMap: homepage-settings
+    mountPath: /app/config/settings.yaml
+    subPath: settings.yaml
+    data:
+      settings.yaml: |
+        theme: dark
+        color: stone
+        fiveColumns: false
+        hideVersion: true
+        statusStyle: "dot"
+        providers:
+          longhorn:
+            url: http://192.168.129.226
+
+        layout:
+          Infra:
+            icon: mdi-cog
+            style: row
+            columns: 4
+
+          Automation:
+            icon: mdi-asterisk
+            style: column
+
+          Storage:
+            icon: mdi-database
+            style: column
+
+          Networking:
+            icon: mdi-wan
+            style: column
+
+          Monitoring:
+            icon: mdi-eye
+            style: column
+
+          Media:
+            icon: mdi-video-vintage
+            style: row
+            columns: 4
+
+          Tools:
+            icon: mdi-wrench
+            style: row
+            columns: 4
+
+  - name: homepage-widgets
+    type: configMap
+    configMap: homepage-widgets
+    mountPath: /app/config/widgets.yaml
+    subPath: widgets.yaml
+    data:
+      widgets.yaml: |
+        - kubernetes:
+            cluster:
+              show: true
+              cpu: true
+              memory: true
+              showLabel: true
+              label: "cluster"
+            nodes:
+              show: true
+              cpu: true
+              memory: true
+              showLabel: true
+
+  - name: homepage-docker
+    type: configMap
+    configMap: homepage-docker
+    mountPath: /app/config/docker.yaml
+    subPath: docker.yaml
+    data:
+      docker.yaml: |
+        balder-docker:
+          host: 192.168.129.100
+          port: 2375
+
+        bragi-docker:
+          host: 192.168.129.105
+          port: 2375
+
+        tyr-docker:
+          host: 192.168.129.165
+          port: 2375
+
+  - name: homepage-services
+    type: configMap
+    configMap: homepage-services
+    mountPath: /app/config/services.yaml
+    subPath: services.yaml
+    data:
+      services.yaml: |
+        - Infra:
+            - Home Assistant:
+                icon: sh-home-assistant.png
+                href: http://192.168.129.180:8123
+                siteMonitor: http://192.168.129.180:8123
+                widget:
+                  type: homeassistant
+                  url: http://192.168.129.180:8123
+                  key: {{HOMEPAGE_VAR_HA_KEY}}
+                  custom:
+                    - state: sensor.audi_a3_sportback_tfsi_e_state_of_charge
+                      label: Audi bat
+                    - state: sensor.audi_a3_sportback_tfsi_e_tank_level
+                      label: Audi tank
+            - Pve1:
+                icon: sh-proxmox.png
+                href: https://192.168.129.145:8006
+                siteMonitor: https://192.168.129.145:8006
+                widget:
+                  type: proxmox
+                  url: https://192.168.129.145:8006
+                  username: {{HOMEPAGE_VAR_PROX_USER}}
+                  password: {{HOMEPAGE_VAR_PROX_PASS}}
+                  node: pve1
+                  fields: ["vms","resources.cpu","resources.mem"]
+            - Pve2:
+                icon: sh-proxmox.png
+                href: https://192.168.129.150:8006
+                siteMonitor: https://192.168.129.150:8006
+                widget:
+                  type: proxmox
+                  url: https://192.168.129.150:8006
+                  username: {{HOMEPAGE_VAR_PROX_USER}}
+                  password: {{HOMEPAGE_VAR_PROX_PASS}}
+                  node: pve2
+                  fields: ["vms","resources.cpu","resources.mem"] 
+            - Pve3:
+                icon: sh-proxmox.png
+                href: https://192.168.129.155:8006
+                siteMonitor: https://192.168.129.155:8006
+                widget:
+                  type: proxmox
+                  url: https://192.168.129.155:8006
+                  username: {{HOMEPAGE_VAR_PROX_USER}}
+                  password: {{HOMEPAGE_VAR_PROX_PASS}}
+                  node: pve3
+                  fields: ["vms","resources.cpu","resources.mem"]
+
+        - Storage:
+            - Synology:
+                icon: sh-synology-light.png
+                href: http://192.168.129.105:5000
+                siteMonitor: http://192.168.129.105:5000
+                widget:
+                  type: diskstation
+                  url: http://192.168.129.105:5000
+                  username: {{HOMEPAGE_VAR_SYN_USER}}
+                  password: {{HOMEPAGE_VAR_SYN_PASS}}
+                  volume: volume_2
+            - Minio:
+                icon: sh-minio.png
+                href: https://minio.local.imrein.com
+                app: minio
+                namespace: prod
+            - Longhorn:
+                icon: sh-rancher-longhorn-light.png
+                href: https://longhorn.local.imrein.com
+                app: longhorn
+                namespace: longhorn-system
+            - Postgresql:
+                icon: sh-postgresql.png
+                app: postgresql
+                namespace: prod
+            - Vault:
+                icon: sh-hashicorp-vault-light.png
+                href: https://vault.local.imrein.com
+                siteMonitor: http://192.168.129.175:8200
+
+        - Tools:
+            - Minecraft stats:
+                icon: sh-minecraft.png
+                href: http://192.168.129.224:8804
+            - Stirling PDF:
+                icon: sh-stirling-pdf.png
+                href: https://pdf.local.imrein.com
+                app: stirlingpdf
+                namespace: prod
+            - TwitchPoints:
+                icon: sh-twitch.png
+                app: twitchminer
+                namespace: prod
+            - Watchtower bragi:
+                icon: sh-watchtower.png
+                href: http://192.168.129.105:8085
+                server: bragi-docker
+                container: watchtower_nas
+
+        - Networking:
+            - AdGuard: 
+                icon: sh-adguard-home.png
+                href: http://192.168.129.55
+                app: adguardhome
+                namespace: prod
+                widget:
+                  type: adguard
+                  url: http://192.168.129.55
+                  username: {{HOMEPAGE_VAR_AD_USER}}
+                  password: {{HOMEPAGE_VAR_AD_PASS}}
+            - Wireguard:
+                icon: sh-wireguard.png
+                href: http://192.168.129.100:51821
+                server: balder-docker
+                container: wg-easy
+                widget:
+                  type: wgeasy
+                  password: ''
+                  url: http://192.168.129.100:51821
+            - Traefik:
+                icon: sh-traefik.png
+                href: https://traefik.local.imrein.com
+                app: traefik
+                namespace: traefik
+            - Dynamic DNS:
+                icon: sh-ddns-updater.png
+                href: https://ddns.local.imrein.com
+                app: ddns
+                namespace: prod
+            - Ntfy:
+                icon: sh-ntfy.png
+                href: https://ntfy.imrein.com
+                app: ntfy
+                namespace: prod
+
+        - Monitoring:
+            - Uptime-kuma:
+                icon: sh-uptime-kuma.png
+                href: https://kuma.local.imrein.com
+                app: uptime-kuma
+                namespace: prod
+                widget:
+                  type: uptimekuma
+                  url: http://192.168.129.52
+                  slug: home
+            - Speedtest:
+                icon: sh-myspeed.png
+                href: https://speedtest.local.imrein.com
+                app: speedtest
+                namespace: prod
+                widget:
+                  type: speedtest
+                  url: http://192.168.129.51
+            - Prometheus:
+                icon: sh-prometheus.png
+                href: https://prometheus.local.imrein.com
+                siteMonitor: http://192.168.129.160:9090
+            - Grafana:
+                icon: sh-grafana.png
+                href: https://grafana.local.imrein.com
+                siteMonitor: http://192.168.129.160:3000
+            - Promtail:
+                icon: sh-loki.png
+                href: http://192.168.129.160:9080
+                siteMonitor: http://192.168.129.160:9080
+
+        - Automation:
+            - Gitea:
+                icon: sh-gitea.png
+                href: http://192.168.129.170:3000
+                siteMonitor: http://192.168.129.170:3000
+                widget:
+                  type: gitea
+                  url: http://192.168.129.170:3000
+                  key: {{HOMEPAGE_VAR_GIT_KEY}}
+            - Jenkins:
+                icon: sh-jenkins.png
+                href: https://jenkins.local.imrein.com
+                siteMonitor: http://192.168.129.170:8080
+            - ArgoCD:
+                icon: sh-argo-cd.png
+                href: https://argocd.local.imrein.com
+                app: argocd-server
+                namespace: argocd
+
+        - Media:
+            - Jellyfin:
+                icon: sh-jellyfin.png
+                href: http://192.168.129.165:8096
+                server: tyr-docker
+                container: jellyfin
+                widget:
+                  type: jellyfin
+                  url: http://192.168.129.165:8096
+                  key: {{HOMEPAGE_VAR_JELLYFIN_KEY}}
+            - Jellyseerr:
+                icon: sh-jellyseerr.png
+                href: http://192.168.129.165:5055
+                server: tyr-docker
+                container: jellyseerr
+                widget:
+                    key: {{HOMEPAGE_VAR_JELLYSEERR_KEY}}
+                    type: jellyseerr
+                    url: http://192.168.129.165:5055
+            - Jellystat:
+                icon: sh-jellystat.png
+                href: http://192.168.129.165:3000
+                server: tyr-docker
+                container: jellystat
+                widget:
+                    type: jellyfin
+                    url: http://192.168.129.165:8096
+                    key: {{HOMEPAGE_VAR_JELLYFIN_KEY}}
+                    enableBlocks: true
+                    enableNowPlaying: false
+                    fields: ["movies", "series", "episodes"]
+            - qBittorrent:
+                icon: sh-qbittorrent.png
+                href: http://192.168.129.105:8080/
+                server: bragi-docker
+                container: qbittorrent
+                widget:
+                  type: qbittorrent
+                  url: http://192.168.129.105:8080
+                  username: {{HOMEPAGE_VAR_TOR_USER}}
+                  password: {{HOMEPAGE_VAR_TOR_PASS}}
+            - Sonarr:
+                icon: sh-sonarr-light.png
+                href: http://192.168.129.105:8989
+                server: bragi-docker
+                container: sonarr
+                widget:
+                  type: sonarr
+                  url: http://192.168.129.105:8989
+                  key: {{HOMEPAGE_VAR_SONARR_KEY}}
+            - Radarr:
+                icon: sh-radarr.png
+                href: http://192.168.129.105:7878
+                server: bragi-docker
+                container: radarr
+                widget:
+                  type: radarr
+                  url: http://192.168.129.105:7878
+                  key: {{HOMEPAGE_VAR_RADARR_KEY}}
+            - Bazarr:
+                icon: sh-bazarr.png
+                href: http://192.168.129.105:6767
+                server: bragi-docker
+                container: bazarr
+                widget:
+                  type: bazarr
+                  url: http://192.168.129.105:6767
+                  key: {{HOMEPAGE_VAR_BAZARR_KEY}}
+            - Prowlarr:
+                icon: sh-prowlarr.png
+                href: http://192.168.129.105:9696
+                server: bragi-docker
+                container: prowlarr
+                widget:
+                  type: prowlarr
+                  url: http://192.168.129.105:9696
+                  key: {{HOMEPAGE_VAR_PROWLARR_KEY}}
+                  fields: ["numberOfGrabs","numberOfQueries","numberOfFailGrabs"]
+
+  - name: homepage-customcss
+    type: configMap
+    configMap: homepage-customcss
+    mountPath: /app/config/custom.css
+    subPath: custom.css
+    data:
+      custom.css: ""
+
+  - name: homepage-customjs
+    type: configMap
+    configMap: homepage-customjs
+    mountPath: /app/config/custom.js
+    subPath: custom.js
+    data:
+      custom.js: ""
+
+  - name: homepage-bookmarks
+    type: configMap
+    configMap: homepage-bookmarks
+    mountPath: /app/config/bookmarks.yaml
+    subPath: bookmarks.yaml
+    data:
+      bookmarks.yaml: ""
+
+  - name: homepage-logs
+    type: emptyDir
+    mountPath: /app/config/logs

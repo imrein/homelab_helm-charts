@@ -1,0 +1,42 @@
+appname: ddns
+replicas: 1
+image: 
+  repository: qmcgaw/ddns-updater
+  version: v2.9.0
+
+service:
+  name: ddns-service
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8000
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - ddns.local.imrein.com
+      kind: Rule
+      services:
+        - name: ddns-service
+          port: 80
+      middlewares:
+        - name: default-headers
+
+env:
+  - name: CONFIG
+    secret: ddns
+    key: config
+
+secrets:
+  - name: ddns
+    path: ddns
+
+resources:
+  limits:
+    memory: 25Mi
+  requests:
+    memory: 25Mi
+
+pvc:
+  enabled: false

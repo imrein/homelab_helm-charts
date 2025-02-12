@@ -1,0 +1,48 @@
+appname: stirlingpdf
+replicas: 1
+image:
+  repository: frooodle/s-pdf
+  version: 0.41.0
+
+service:
+  name: stirlingpdf-service
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - pdf.local.imrein.com
+      kind: Rule
+      services:
+        - name: stirlingpdf-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: local-imrein-com-live-tls
+
+resources:
+  limits:
+    memory: 2Gi
+  requests:
+    memory: 2Gi
+
+pvc:
+  enabled: true
+  size: 350Mi
+
+volumes:
+  - name: stirlingpdf-data
+    type: block
+    mountPath: /usr/share/tessdata
+    subPath: tessdata
+
+  - name: stirlingpdf-conf
+    type: block
+    mountPath: /configs
+    subPath: configs

@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: prometheus-stack
+version: 1.0.0
+type: application
+dependencies:
+  - name: prometheus
+    version: 27.3.0
+    repository: https://prometheus-community.github.io/helm-charts

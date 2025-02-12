@@ -1,0 +1,16 @@
+{{- define "lib.persistentvolume" }}
+{{- if .Values.pvc.enabled -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-{{ .Values.appname }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: {{ .Values.pvc.size }}
+{{- end }}
+{{- end }}

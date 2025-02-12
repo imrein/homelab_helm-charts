@@ -1,0 +1,14 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dev-imrein-com
+  namespace: dev
+spec:
+  secretName: dev-imrein-com-live-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "*.dev.imrein.com"
+  dnsNames:
+  - "*.dev.imrein.com"

@@ -1,0 +1,64 @@
+appname: minio
+replicas: 1
+image:
+  repository: quay.io/minio/minio
+  version: RELEASE.2024-11-07T00-52-20Z-cpuv1
+
+service:
+  name: minio-service
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 9001
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - minio.local.imrein.com
+      kind: Rule
+      services:
+        - name: minio-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: local-imrein-com-live-tls
+
+command:
+  - /bin/bash
+  - -c
+
+args:
+  - minio server /data --console-address :9001
+
+env:
+  - name: MINIO_ROOT_USER
+    secret: minio
+    key: user
+  - name: MINIO_ROOT_PASSWORD
+    secret: minio
+    key: password
+
+secrets:
+  - name: minio
+    path: minio
+
+resources:
+  limits:
+    memory: 150Mi
+  requests:
+    memory: 150Mi
+
+pvc:
+  enabled: true
+  size: 5Gi
+
+volumes:
+  - name: minio
+    type: block
+    mode: ReadWriteMany
+    size: 5Gi
+    mountPath: /data
+    readOnly: false

@@ -1,0 +1,16 @@
+appname: demo-app
+replicas: 3
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - demo2.local.imrein.com
+      kind: Rule
+      services:
+        - name: demo-app-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: prod-imrein-com-live-tls

@@ -1,0 +1,8 @@
+apiVersion: v2
+name: ddns
+version: 0.1.0
+type: application
+dependencies:
+  - name: library-base
+    version: 0.1.0
+    repository: "file://../../library/library-base"

@@ -1,0 +1,18 @@
+{{- define "lib.service" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.appname }}-service
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app.kubernetes.io/name: {{ .Values.appname }}
+  ports:
+    {{- range .Values.service.ports }}
+    - port: {{ .port }}
+      targetPort: {{ .targetPort }}
+      protocol: {{ .protocol | default "TCP" }}
+      name: {{ .name }}
+    {{- end }}
+{{- end }}

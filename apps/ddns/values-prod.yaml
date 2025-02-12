@@ -1,0 +1,16 @@
+appname: ddns
+replicas: 1
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - ddns.local.imrein.com
+      kind: Rule
+      services:
+        - name: ddns-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: prod-imrein-com-live-tls

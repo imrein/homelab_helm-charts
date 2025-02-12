@@ -1,0 +1,14 @@
+appname: ddns
+replicas: 2
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - ddns.dev.imrein.com
+      kind: Rule
+      services:
+        - name: ddns-service
+          port: 80
+      middlewares:
+        - name: default-headers

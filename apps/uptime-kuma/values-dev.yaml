@@ -1,0 +1,16 @@
+appname: uptime-kuma
+replicas: 1
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - kuma.dev.imrein.com
+      kind: Rule
+      services:
+        - name: uptime-kuma-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: dev-imrein-com-live-tls

@@ -1,0 +1,60 @@
+appname: demo-app
+replicas: 1
+image: 
+  repository: nginx
+  version: 1.27
+
+service:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - demo.local.imrein.com
+      kind: Rule
+      services:
+        - name: demo-app-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: local-imrein-com-live-tls
+
+resources:
+  limits:
+    memory: 25Mi
+  requests:
+    memory: 25Mi
+
+pvc:
+  enabled: false
+
+volumes:
+  - name: demo
+    type: configMap
+    configMap: demo
+    mountPath: /etc/nginx/nginx.conf
+    subPath: nginx.conf
+    data:
+      nginx.conf: |
+        user  nginx;
+        worker_processes  auto;
+        error_log  /var/log/nginx/error.log notice;
+        pid        /var/run/nginx.pid;
+
+        events {
+            worker_connections  1024;
+        }
+
+        http {
+            include       /etc/nginx/mime.types;
+            default_type  application/octet-stream;
+
+            sendfile        on;
+            keepalive_timeout  65;
+            include /etc/nginx/conf.d/*.conf;
+        }

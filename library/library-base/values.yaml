@@ -1,0 +1,107 @@
+appname: demo-app
+namespace: default
+
+replicas: 1
+
+image: {}
+  # repository: nginx
+  # version: latest
+
+service: {}
+  # type: ClusterIP
+  # ports:
+  #   - name: http
+  #     port: 80
+  #     targetPort: 80
+
+ingress: {}
+  # enabled: true
+  # routes:
+  #   - match:
+  #       - testing.local.imrein.com
+  #     services:
+  #       - name: testingapp-service
+  #         port: 80
+  #     middlewares:
+  #       - name: default-headers
+  # tls:
+  #   secret: local-imrein-com-live-tls
+
+pvc: {}
+  # enabled: false
+  # size: 5Gi
+
+volumes: []
+  # # Block storage
+  # - name: testvolume
+  #   type: block
+  #   mountPath: /usr/share/nginx/html
+  #   subPath: html
+  # # NFS
+  # - name: testvolume
+  #   type: nfs
+  #   server: 192.168.129.105
+  #   mountPath: /usr/share/nginx/html
+  #   path: /volume2/NetBackup/kubernetes/website/html
+  # # ConfigMap
+  # - name: testvolume
+  #   type: configMap
+  #   configMap: testertje
+  #   mountPath: /app/config/logs
+  #   subPath: /var/test
+  #   data: |
+
+secrets: []
+  # - name: xyz
+  #   path: /here/it/is
+
+env: []
+  # - name: test
+  #   secret: xyz
+  #   key: value1
+  # - name: foeftje
+  #   value: 1234
+
+envFrom: []
+  # - secretName: homepage
+
+postStartCommands: []
+  # - ls
+  # - df
+  # - echo "test"
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe: {}
+  # httpGet:
+  #   path: /
+  #   port: http
+  # readinessProbe:
+  #   httpGet:
+  #     path: /
+  #     port: http
+
+podLabels: {}
+
+serviceAccount: []
+  # - name: homepage
+  #   secret: homepage
+
+clusterRoles: []
+  # - name: homepage
+  #   rules:
+  #     - apiGroups:
+  #         - ""
+  #       resources:
+  #         - namespaces
+  #         - pods
+  #         - nodes
+  #       verbs:
+  #         - get
+  #         - list

@@ -1,0 +1,39 @@
+appname: postgresql
+replicas: 1
+image:
+  repository: postgres
+  version: 17.2
+
+service:
+  name: postgresql-service
+  type: LoadBalancer
+  ports:
+    - name: pgsql
+      port: 5432
+      targetPort: 5432
+
+ingress:
+  enabled: false
+
+envFrom:
+  - secretName: postgresql
+
+secrets:
+  - name: postgresql
+    path: postgresql
+
+resources:
+  limits:
+    memory: 500Mi
+  requests:
+    memory: 500Mi
+
+pvc:
+  enabled: true
+  size: 5Gi
+
+volumes:
+  - name: postgresql
+    type: block
+    mountPath: /var/lib/postgresql/data
+    subPath: data

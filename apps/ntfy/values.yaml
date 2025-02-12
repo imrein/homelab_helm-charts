@@ -1,0 +1,61 @@
+appname: ntfy
+replicas: 1
+image: 
+  repository: binwiederhier/ntfy
+  version: v2.11.0
+
+service:
+  name: ntfy-service
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - ntfy.imrein.com
+      kind: Rule
+      services:
+        - name: ntfy-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: general-imrein-com-live-tls
+
+args:
+  - serve
+
+env:
+  - name: NTFY_BASE_URL
+    value: "https://ntfy.imrein.com"
+  - name: NTFY_BEHIND_PROXY
+    value: "true"
+
+resources:
+  limits:
+    memory: 50Mi
+  requests:
+    memory: 50Mi
+
+pvc:
+  enabled: true
+  size: 250Mi
+
+volumes:
+  - name: ntfy
+    type: block
+    mountPath: /etc/ntfy
+    subPath: ntfy
+
+  - name: ntfy
+    type: configMap
+    configMap: ntfy
+    mountPath: /var/cache/ntfy
+    data:
+      server.yml: |
+        base-url: https://ntfy.imrein.com
+        web-root: disable

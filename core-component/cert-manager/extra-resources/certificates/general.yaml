@@ -1,0 +1,15 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: general-imrein-com
+  namespace: default
+spec:
+  secretName: general-imrein-com-live-tls
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  commonName: "*.imrein.com"
+  dnsNames:
+  - "imrein.com"
+  - "*.imrein.com"

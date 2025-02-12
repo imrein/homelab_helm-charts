@@ -1,0 +1,63 @@
+appname: adguardhome
+replicas: 1
+image: 
+  repository: adguard/adguardhome
+  version: v0.107.56
+
+service:
+  name: adguardhome-service
+  type: LoadBalancer
+  ports:
+    - name: dns-udp
+      port: 53
+      targetPort: 53
+      protocol: UDP
+    - name: dns-tcp
+      port: 53
+      targetPort: 53
+      protocol: TCP
+    - name: dnstls
+      port: 853
+      targetPort: 853
+      protocol: UDP
+    - name: http
+      port: 80
+      targetPort: 80
+    - name: init
+      port: 3000
+      targetPort: 3000
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - adguardhome.local.imrein.com
+      kind: Rule
+      services:
+        - name: adguardhome-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: local-imrein-com-live-tls
+
+resources:
+  limits:
+    memory: 250Mi
+  requests:
+    memory: 250Mi
+
+pvc:
+  enabled: true
+  size: 7Gi
+
+volumes:
+  - name: adguardhome-conf
+    type: block
+    mountPath: /opt/adguardhome/conf
+    subPath: conf
+
+  - name: adguardhome-work
+    type: block
+    mountPath: /opt/adguardhome/work
+    subPath: work

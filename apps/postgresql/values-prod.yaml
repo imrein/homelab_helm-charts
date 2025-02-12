@@ -1,0 +1,2 @@
+appname: postgresql
+replicas: 1

@@ -1,0 +1,16 @@
+appname: adguardhome
+replicas: 1
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - adguardhome.dev.imrein.com
+      kind: Rule
+      services:
+        - name: adguardhome-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: dev-imrein-com-live-tls

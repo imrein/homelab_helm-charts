@@ -1,0 +1,16 @@
+appname: minio
+replicas: 1
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - minio.local.imrein.com
+      kind: Rule
+      services:
+        - name: minio-service
+          port: 80
+      middlewares:
+        - name: default-headers
+  tls:
+    secret: prod-imrein-com-live-tls

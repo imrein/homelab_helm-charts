@@ -1,0 +1,79 @@
+appname: website-blog
+replicas: 3
+image: 
+  repository: nginx
+  version: 1.27
+
+service:
+  name: website-blog-service
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+
+ingress:
+  enabled: true
+  routes:
+    - match: 
+        - imrein.com
+        - www.imrein.com
+      kind: Rule
+      services:
+        - name: website-blog-service
+          port: 80
+      middlewares:
+        - name: default-headers
+        - name: headers-forwarding
+  tls:
+    secret: general-imrein-com-live-tls
+
+resources:
+  limits:
+    memory: 25Mi
+  requests:
+    memory: 25Mi
+
+pvc:
+  enabled: false
+
+volumes:
+  - name: website-blog
+    type: nfs
+    server: 192.168.129.105
+    mountPath: /usr/share/nginx/html
+    path: /volume2/NetBackup/kubernetes/website/html
+
+  - name: website-blog
+    type: configMap
+    configMap: website-blog
+    mountPath: /etc/nginx/nginx.conf
+    subPath: nginx.conf
+    data:
+      nginx.conf: |
+        user  nginx;
+        worker_processes  auto;
+        error_log  /var/log/nginx/error.log notice;
+        pid        /var/run/nginx.pid;
+
+        events {
+            worker_connections  1024;
+        }
+
+        http {
+            include       /etc/nginx/mime.types;
+            default_type  application/octet-stream;
+
+            log_format  main  '$remote_addr [$time_local] "$request" '
+                              '$status $body_bytes_sent "$http_referer" '
+                              '"$http_user_agent" "$http_x_forwarded_for"';
+
+            access_log  /var/log/nginx/access.log  main;
+
+            set_real_ip_from 10.0.0.0/8;
+            real_ip_header X-Forwarded-For;
+
+            sendfile        on;
+            keepalive_timeout  65;
+            include /etc/nginx/conf.d/*.conf;
+        }
