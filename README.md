@@ -37,6 +37,8 @@ The structure includes:
 - [x] Uptime-kuma
 - [x] Blog (Nginx)
 
+![Homepage](.image/Homelab_homepage.png)
+
 ## Example usage
 
 My homelab uses ArgoCD to deploy everything, so I created another simple helm chart seperate from this repository to deploy everything (`homelab_k3s`).
