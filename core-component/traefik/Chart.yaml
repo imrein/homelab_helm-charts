@@ -5,5 +5,5 @@ version: 1.0.2
 type: application
 dependencies:
   - name: traefik
-    version: 34.3.0
+    version: 34.4.0
     repository: https://helm.traefik.io/traefik
