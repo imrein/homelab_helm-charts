@@ -2,7 +2,7 @@ appname: homepage
 replicas: 1
 image: 
   repository: ghcr.io/gethomepage/homepage
-  version: v0.10.9
+  version: v1.0.3
 
 service:
   name: homepage-service
@@ -28,6 +28,10 @@ ingress:
 
 envFrom:
   - secretName: homepage
+
+env:
+  - name: HOMEPAGE_ALLOWED_HOSTS
+    value: "homepage.local.imrein.com"
 
 secrets:
   - name: homepage
