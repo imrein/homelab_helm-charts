@@ -29,6 +29,10 @@ ingress:
 envFrom:
   - secretName: homepage
 
+env:
+  - name: HOMEPAGE_ALLOWED_HOSTS
+    value: "homepage.local.imrein.com"
+
 secrets:
   - name: homepage
     path: homepage
