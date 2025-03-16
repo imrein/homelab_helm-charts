@@ -1,0 +1,37 @@
+name: Lint helm charts
+run-name: Linting helm charts.
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Lint app charts
+        run: |
+          for app in $(ls apps); do
+            echo 'Linting $app...'
+            cd apps/$app
+
+            helm dependency build
+            helm lint .
+
+            cd ../../
+          done
+
+      - name: Lint core charts
+        run: |
+          for component in $(ls core-component); do
+            echo 'Linting $component...'
+            cd core-component/$component
+
+            helm dependency build
+            helm lint .
+
+            cd ../../
+          done
