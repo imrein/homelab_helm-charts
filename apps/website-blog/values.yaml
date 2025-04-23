@@ -2,7 +2,7 @@ appname: website-blog
 replicas: 3
 image: 
   repository: nginx
-  version: 1.27
+  version: 1.28
 
 service:
   name: website-blog-service
