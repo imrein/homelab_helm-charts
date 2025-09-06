@@ -5,5 +5,5 @@ version: 1.0.0
 type: application
 dependencies:
   - name: prometheus
-    version: 27.35.0
+    version: 27.36.0
     repository: https://prometheus-community.github.io/helm-charts
