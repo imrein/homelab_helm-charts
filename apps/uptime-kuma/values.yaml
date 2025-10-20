@@ -2,7 +2,7 @@ appname: uptime-kuma
 replicas: 1
 image: 
   repository: louislam/uptime-kuma
-  version: 1.23.16
+  version: 1.23.17
 
 service:
   name: uptime-kuma-service
