@@ -2,7 +2,7 @@ appname: homepage
 replicas: 1
 image: 
   repository: ghcr.io/gethomepage/homepage
-  version: v1.5.0
+  version: v1.6.0
 
 service:
   name: homepage-service
