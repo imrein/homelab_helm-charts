@@ -2,7 +2,7 @@ appname: twitchminer
 replicas: 1
 image:
   repository: rdavidoff/twitch-channel-points-miner-v2
-  version: 2.0.2
+  version: 2.0.3
 
 service:
   name: twitchminer-service
