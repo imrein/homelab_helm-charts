@@ -2,7 +2,7 @@ appname: postgresql
 replicas: 1
 image:
   repository: postgres
-  version: 17.6
+  version: 17.7
 
 service:
   name: postgresql-service
