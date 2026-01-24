@@ -1,8 +1,4 @@
 traefik:
-  globalArguments:
-    - "--global.sendanonymoususage=false"
-    - "--global.checknewversion=false"
-
   additionalArguments:
     - "--serversTransport.insecureSkipVerify=true"
     - "--log.level=INFO"
@@ -21,11 +17,12 @@ traefik:
 
   ports:
     web:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
-          permanent: true
+      http:
+        redirections:
+          entryPoint:
+            to: websecure
+            scheme: https
+            permanent: true
       forwardedHeaders:
         trustedIPs:
           - 192.168.128.1/32
@@ -33,9 +30,6 @@ traefik:
           - 10.0.0.0/8
     websecure:
       http3:
-        enabled: true
-      advertisedPort: 4443
-      tls:
         enabled: true
       forwardedHeaders:
         trustedIPs:
