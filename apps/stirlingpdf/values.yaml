@@ -2,7 +2,7 @@ appname: stirlingpdf
 replicas: 1
 image:
   repository: frooodle/s-pdf
-  version: 2.7.3
+  version: 2.8.0
 
 service:
   name: stirlingpdf-service
