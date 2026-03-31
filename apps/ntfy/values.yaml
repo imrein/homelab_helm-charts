@@ -2,7 +2,7 @@ appname: ntfy
 replicas: 1
 image: 
   repository: binwiederhier/ntfy
-  version: v2.20.1
+  version: v2.21.0
 
 service:
   name: ntfy-service
