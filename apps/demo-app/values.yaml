@@ -2,7 +2,7 @@ appname: demo-app
 replicas: 1
 image: 
   repository: nginx
-  version: 1.29
+  version: 1.31
 
 service:
   type: ClusterIP
