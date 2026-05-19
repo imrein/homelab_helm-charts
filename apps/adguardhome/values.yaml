@@ -2,7 +2,7 @@ appname: adguardhome
 replicas: 1
 image: 
   repository: adguard/adguardhome
-  version: v0.107.74
+  version: v0.107.75
 
 service:
   name: adguardhome-service
