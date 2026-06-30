@@ -41,9 +41,9 @@ traefik:
     dashboard:
       enabled: false
 
-  logs:
-    general:
-      level: "INFO"
+  log:
+    level: INFO
+    format: json
 
   providers:
     kubernetesCRD:
